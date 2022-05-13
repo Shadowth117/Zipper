@@ -280,7 +280,7 @@ namespace Zipper
                 List<byte[]> files = new();
                 for(int i = 0; i < startEndPairs.Count; i++)
                 {
-                    files.Add(sr.ReadBytes(fimgStart + startEndPairs[i].start, startEndPairs[i].length));
+                    files.Add(sr.ReadBytes(fimgStart + startEndPairs[i].start + 8, startEndPairs[i].length));
                 }
 
                 return files;
