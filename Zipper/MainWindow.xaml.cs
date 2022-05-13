@@ -137,6 +137,10 @@ namespace Zipper
                             WriteZarc(file, fileBytes);
                             return;
                         case ".narc":
+                            if(narcCB.IsChecked == true)
+                            {
+                                File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
+                            }
                             WriteNarc(file, fileBytes);
                             return;
                     }
@@ -146,6 +150,10 @@ namespace Zipper
                 switch (ext)
                 {
                     case ".narc":
+                        if (narcCB.IsChecked == true)
+                        {
+                            File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
+                        }
                         WriteNarc(file, outFile);
                         break;
                     default:

@@ -14,5 +14,6 @@
             </MenuItem>
         </Menu>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="16,25,0,0" Text="Select file(s) or a folder to decrypt, decompress, and extract them as needed." TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <CheckBox x:Name="narcCB" Content="Dump decrypted and decompressed .narc" HorizontalAlignment="Left" Margin="15,78,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
