@@ -1,0 +1,18 @@
+﻿<Window x:Class="Zipper.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Zipper"
+        mc:Ignorable="d"
+        Title="Zipper" Height="129" Width="301">
+    <Grid>
+        <Menu x:Name="menu" Height="25" VerticalAlignment="Top">
+            <MenuItem Header="File" Height="25" Width="39">
+                <MenuItem Header="Process File(s)" Click="ProcessAllFiles"/>
+                <MenuItem Header="Process Folder" Click="ProcessAllFilesFromFolder"/>
+            </MenuItem>
+        </Menu>
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="16,25,0,0" Text="Select file(s) or a folder to decrypt, decompress, and extract them as needed." TextWrapping="Wrap" VerticalAlignment="Top"/>
+    </Grid>
+</Window>
