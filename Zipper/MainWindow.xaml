@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Zipper"
         mc:Ignorable="d"
-        Title="Zipper" Height="129" Width="301">
+        Title="Zipper" Height="146" Width="301">
     <Grid>
         <Menu x:Name="menu" Height="25" VerticalAlignment="Top">
             <MenuItem Header="File" Height="25" Width="39">
                 <MenuItem Header="Process File(s)" Click="ProcessAllFiles"/>
                 <MenuItem Header="Process Folder" Click="ProcessAllFilesFromFolder"/>
+                <MenuItem Header="Process ZBB script(s)" Click="ProcessZBBs"/>
             </MenuItem>
         </Menu>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="16,25,0,0" Text="Select file(s) or a folder to decrypt, decompress, and extract them as needed." TextWrapping="Wrap" VerticalAlignment="Top"/>

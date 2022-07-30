@@ -76,6 +76,65 @@ namespace Zipper
             }
         }
 
+        public void ProcessZBBs(object sender, RoutedEventArgs e)
+        {
+            fileOpen.Multiselect = true;
+            if (fileOpen.ShowDialog() == true)
+            {
+                foreach(var fname in fileOpen.FileNames)
+                {
+                    var bytes = DecryptAndDeflate(fname);
+                    if (bytes == null)
+                    {
+                        bytes = File.ReadAllBytes(fname);
+                    }
+                    for (int i = 0; i < bytes.Length; i++)
+                    {
+                        bytes[i] ^= 0xFF;
+                    }
+                    File.WriteAllBytes(Path.ChangeExtension(fname, ".Decrypted.zbb"), bytes);
+                }
+            }
+        }
+
+        private void DecryptAndDeflateTest(string fileName)
+        {
+            var file = File.ReadAllBytes(fileName);
+            for(byte b = 0; b < 256; b++)
+            {
+                try
+                {
+                    var bytes = DecryptAndDeflateTest(file, b);
+                    File.WriteAllBytes(fileName + $"_out_{b}", bytes);
+                    Debug.WriteLine($"{b} xor succeeded!");
+                }
+                catch
+                {
+                    Debug.WriteLine($"{b} xor failed...");
+                }
+            }
+        }
+        private static byte[] DecryptAndDeflateTest(byte[] file, byte b)
+        {
+            if (file.Length == 0 || Encoding.UTF8.GetString(file, 0, 4) != "ZPR\0")
+            {
+                return null;
+            }
+            var newFile = new byte[file.Length - 0x10];
+            var decompLength = BitConverter.ToUInt32(file, 0x8);
+            Array.Copy(file, 0x10, newFile, 0, file.Length - 0x10);
+            for (int i = 0; i < newFile.Length; i++)
+            {
+                newFile[i] ^= 0x95;
+            }
+            newFile = PrsCompDecomp.Decompress(newFile, decompLength);
+            for (int i = 0; i < newFile.Length; i++)
+            {
+                newFile[i] ^= b;
+            }
+            return newFile;
+        }
+
         private byte[] DecryptAndDeflate(string fileName)
         {
             var file = File.ReadAllBytes(fileName);
