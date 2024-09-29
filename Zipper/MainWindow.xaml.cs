@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Reloaded.Memory.Streams;
 using System;
@@ -182,42 +182,51 @@ namespace Zipper
 
         private ParallelLoopResult ProcessAllFiles(string[] files)
         {
+            var narcCBChecked = narcCB.IsChecked;
             return Parallel.ForEach(files, file =>
             {
-                Debug.WriteLine($"File {Path.GetFileName(file)}");
-                var ext = Path.GetExtension(file);
-                var fileBytes = File.ReadAllBytes(file);
-                var outFile = DecryptAndDeflate(fileBytes);
-                if (outFile == null)
+
+                bool pass = false;
+                int count = 0;
+                while (pass == false && count < 999)
                 {
-                    switch(ext)
+                    try
                     {
-                        case ".zarc":
-                            WriteZarc(file, fileBytes);
-                            return;
-                        case ".narc":
-                            if(narcCB.IsChecked == true)
-                            {
-                                File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
-                            }
-                            WriteNarc(file, fileBytes);
-                            return;
-                    }
-                    Debug.WriteLine($"File {Path.GetFileName(file)} does not need processing.");
-                    return;
-                }
-                switch (ext)
-                {
-                    case ".narc":
-                        if (narcCB.IsChecked == true)
+                        var ext = Path.GetExtension(file);
+                        var fileBytes = File.ReadAllBytes(file);
+                        var outFile = DecryptAndDeflate(fileBytes);
+                        if (outFile == null)
                         {
-                            File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
+                            switch (ext)
+                            {
+                                case ".zarc":
+                                    WriteZarc(file, fileBytes);
+                                    return;
+                                case ".narc":
+                                    WriteNarc(file, fileBytes);
+                                    return;
+                            }
+                            return;
                         }
-                        WriteNarc(file, outFile);
-                        break;
-                    default:
-                        File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
-                        break;
+                        switch (ext)
+                        {
+                            case ".narc":
+                                if (narcCBChecked == true)
+                                {
+                                    File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
+                                }
+                                WriteNarc(file, outFile);
+                                break;
+                            default:
+                                File.WriteAllBytes(file.Replace(ext, "_out" + ext), outFile);
+                                break;
+                        }
+                        pass = true;
+                    }
+                    catch {
+                        count++;
+                        System.Threading.Thread.Sleep(20);
+                    }
                 }
             });
         }
@@ -312,7 +321,7 @@ namespace Zipper
                 {
                     if(typeFlags != 0x8)
                     {
-                        //NARC has this directoryo structure thing, but it's stupid and we're gonna skip it
+                        //NARC has this directory structure thing, but it's stupid and we're gonna skip it
                         var position = sr.Position();
                         var lastF0 = position;
                         while (position < fimgStart)
