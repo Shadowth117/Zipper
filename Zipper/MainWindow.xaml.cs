@@ -38,6 +38,11 @@ namespace Zipper
             fileOpen.Multiselect = false;
             if (fileOpen.ShowDialog() == true)
             {
+                if(Path.GetFileName(fileOpen.FileName) == "rom.bin")
+                {
+                    WriteRomBin(fileOpen.FileName, File.ReadAllBytes(fileOpen.FileName));
+                    return;
+                }
                 var outFile = DecryptAndDeflate(fileOpen.FileName);
                 if (outFile == null)
                 {
@@ -190,8 +195,12 @@ namespace Zipper
                 int count = 0;
                 while (pass == false && count < 999)
                 {
-                    try
-                    {
+                        if (Path.GetFileName(file) == "rom.bin")
+                        {
+                            WriteRomBin(fileOpen.FileName, File.ReadAllBytes(fileOpen.FileName));
+                            pass = true;
+                            continue;
+                        }
                         var ext = Path.GetExtension(file);
                         var fileBytes = File.ReadAllBytes(file);
                         var outFile = DecryptAndDeflate(fileBytes);
@@ -222,11 +231,6 @@ namespace Zipper
                                 break;
                         }
                         pass = true;
-                    }
-                    catch {
-                        count++;
-                        System.Threading.Thread.Sleep(20);
-                    }
                 }
             });
         }
@@ -268,6 +272,27 @@ namespace Zipper
                 }
 
                 return files;
+            }
+        }
+
+        public static void WriteRomBin(string fileName, byte[] buffer)
+        {
+            var path = Path.GetDirectoryName(fileName) + "\\" + Path.GetFileNameWithoutExtension(fileName);
+            Directory.CreateDirectory(path); 
+            var names = new List<string>();
+            using (Stream strm = new MemoryStream(buffer))
+            using (BufferedStreamReader sr = new BufferedStreamReader(strm, 8192))
+            {
+                List<int> addresses = new List<int>() { sr.Read<int>() };
+                while(sr.Position() < addresses[0])
+                {
+                    addresses.Add(sr.Read<int>());
+                }
+                for(int i = 0; i < addresses.Count - 1; i++)
+                {
+                    var fileBuffer = sr.ReadBytes(addresses[i], addresses[i + 1] - addresses[i]);
+                    File.WriteAllBytes(Path.Combine(path + "\\", $"file{i}"), fileBuffer);
+                }
             }
         }
 
